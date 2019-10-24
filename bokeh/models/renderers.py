@@ -76,6 +76,11 @@ class Renderer(Model):
 
     '''
 
+    scope = Instance("bokeh.models.canvas.Scope", default=None, help="""
+    Specifies a coordinate system into which data is rendered. If unset, defaults
+    to the renderer paren't (e.g. canvas, plot, another renderer) coordinate system.
+    """)
+
     level = Enum(RenderLevel, help="""
     Specifies the level in which to paint this renderer.
     """)

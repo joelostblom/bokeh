@@ -8,7 +8,6 @@ import {DataRange1d} from "../ranges/data_range1d"
 import {FactorRange} from "../ranges/factor_range"
 
 import {LayoutItem} from "core/layout"
-import {Arrayable} from "core/types"
 import {BBox} from "core/util/bbox"
 
 export type Ranges = {[key: string]: Range}
@@ -34,13 +33,6 @@ export class CartesianFrame extends LayoutItem {
 
   protected _xscales: Scales
   protected _yscales: Scales
-
-  map_to_screen(x: Arrayable<number>, y: Arrayable<number>,
-                x_name: string = "default", y_name: string = "default"): [Arrayable<number>, Arrayable<number>] {
-    const sx = this.xscales[x_name].v_compute(x)
-    const sy = this.yscales[y_name].v_compute(y)
-    return [sx, sy]
-  }
 
   protected _get_ranges(range: Range, extra_ranges: Ranges): Ranges {
     return {...extra_ranges, default: range}

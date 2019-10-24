@@ -101,7 +101,7 @@ export class AxisView extends GuideRendererView {
       return
 
     const [xs, ys]     = this.rule_coords
-    const [sxs, sys]   = this.plot_view.map_to_screen(xs, ys, this.model.x_range_name, this.model.y_range_name)
+    const [sxs, sys]   = this.scope.map_to_screen(xs, ys)
     const [nx, ny]     = this.normals
     const [xoff, yoff] = this.offsets
 
@@ -183,7 +183,7 @@ export class AxisView extends GuideRendererView {
       return
 
     const [x, y]       = coords
-    const [sxs, sys]   = this.plot_view.map_to_screen(x, y, this.model.x_range_name, this.model.y_range_name)
+    const [sxs, sys]   = this.scope.map_to_screen(x, y)
     const [nx, ny]     = this.normals
     const [xoff, yoff] = this.offsets
 
@@ -218,7 +218,7 @@ export class AxisView extends GuideRendererView {
       ;[xoff, yoff] = [0, 0]
     } else {
       const [dxs, dys] = coords
-      ;[sxs, sys] = this.plot_view.map_to_screen(dxs, dys, this.model.x_range_name, this.model.y_range_name)
+      ;[sxs, sys] = this.scope.map_to_screen(dxs, dys)
       ;[xoff, yoff] = this.offsets
     }
 
@@ -373,11 +373,7 @@ export class AxisView extends GuideRendererView {
   get ranges(): [Range, Range] {
     const i = this.dimension
     const j = (i + 1) % 2
-    const {frame} = this.plot_view
-    const ranges = [
-      frame.x_ranges[this.model.x_range_name],
-      frame.y_ranges[this.model.y_range_name],
-    ]
+    const {ranges} = this.scope
     return [ranges[i], ranges[j]]
   }
 

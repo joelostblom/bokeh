@@ -2,7 +2,6 @@ import {DataRenderer, DataRendererView} from "./data_renderer"
 import {GlyphRenderer, GlyphRendererView} from "./glyph_renderer"
 import {LayoutProvider} from "../graphs/layout_provider"
 import {GraphHitTestPolicy, NodesOnly} from "../graphs/graph_hit_test_policy"
-import {Scale} from "../scales/scale"
 import * as p from "core/properties"
 import {build_views, remove_views} from "core/build_views"
 import {SelectionManager} from "core/selection_manager"
@@ -13,17 +12,10 @@ export class GraphRendererView extends DataRendererView {
   node_view: GlyphRendererView
   edge_view: GlyphRendererView
 
-  xscale: Scale
-  yscale: Scale
-
   protected _renderer_views: Map<GlyphRenderer, GlyphRendererView>
 
   initialize(): void {
     super.initialize()
-
-    this.xscale = this.plot_view.frame.xscales.default
-    this.yscale = this.plot_view.frame.yscales.default
-
     this._renderer_views = new Map()
   }
 

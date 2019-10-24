@@ -1,13 +1,14 @@
 import {View} from "core/view"
 import * as visuals from "core/visuals"
 import {RenderLevel} from "core/enums"
-import {Arrayable, Box} from "core/types"
+import {Box} from "core/types"
 import * as p from "core/properties"
 import {Model} from "../../model"
 import {BBox} from "core/util/bbox"
 
 import type {Plot, PlotView} from "../plots/plot"
 import type {CanvasView, CanvasLayer} from "../canvas/canvas"
+import {Scope, ScopeView} from "../canvas/scope"
 
 export abstract class RendererView extends View {
   model: Renderer
@@ -38,16 +39,19 @@ export abstract class RendererView extends View {
     return this.model.level == "overlay" ? overlays : primary
   }
 
+  get scope(): ScopeView {
+    //this.canvas_view.scope_views
+    //this.model.scope
+    //(this.model as any).x_range_name
+    //(this.model as any).y_range_name
+  }
+
   request_render(): void {
     this.plot_view.request_render()
   }
 
   notify_finished(): void {
     this.plot_view.notify_finished()
-  }
-
-  map_to_screen(x: Arrayable<number>, y: Arrayable<number>): [Arrayable<number>, Arrayable<number>] {
-    return this.plot_view.map_to_screen(x, y, (this.model as any).x_range_name, (this.model as any).y_range_name)
   }
 
   interactive_bbox?(sx: number, sy: number): BBox
@@ -86,6 +90,7 @@ export namespace Renderer {
   export type Attrs = p.AttrsOf<Props>
 
   export type Props = Model.Props & {
+    scope: p.Property<Scope | null>
     level: p.Property<RenderLevel>
     visible: p.Property<boolean>
   }
@@ -105,8 +110,9 @@ export abstract class Renderer extends Model {
 
   static init_Renderer(): void {
     this.define<Renderer.Props>({
-      level: [ p.RenderLevel ],
-      visible: [ p.Boolean, true ],
+      scope:   [ p.Instance,    null ],
+      level:   [ p.RenderLevel       ],
+      visible: [ p.Boolean,     true ],
     })
   }
 }

@@ -269,7 +269,7 @@ export class MultiPolygonsView extends GlyphView {
             self[sxname][i][j] = new Array(nk)
             self[syname][i][j] = new Array(nk)
             for (let k = 0; k < nk; k++) {
-              const [sx, sy] = this.map_to_screen(self[xname][i][j][k], self[yname][i][j][k])
+              const [sx, sy] = this.renderer.scope.map_to_screen(self[xname][i][j][k], self[yname][i][j][k])
               self[sxname][i][j][k] = sx
               self[syname][i][j][k] = sy
             }

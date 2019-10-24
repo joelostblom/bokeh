@@ -14,7 +14,7 @@ import {Axis, AxisView} from "../axes/axis"
 import {ToolbarPanel} from "../annotations/toolbar_panel"
 
 import {Reset} from "core/bokeh_events"
-import {Arrayable, Interval} from "core/types"
+import {Interval} from "core/types"
 import {Signal0} from "core/signaling"
 import {build_views, remove_views} from "core/build_views"
 import {Visuals} from "core/visuals"
@@ -395,11 +395,6 @@ export class PlotCanvasView extends LayoutDOMView {
     }
 
     this.range_update_timestamp = Date.now()
-  }
-
-  map_to_screen(x: Arrayable<number>, y: Arrayable<number>,
-                x_name: string = "default", y_name: string = "default"): [Arrayable<number>, Arrayable<number>] {
-    return this.frame.map_to_screen(x, y, x_name, y_name)
   }
 
   push_state(type: string, new_info: Partial<StateInfo>): void {

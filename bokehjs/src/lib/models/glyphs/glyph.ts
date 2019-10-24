@@ -261,9 +261,10 @@ export abstract class GlyphView extends View {
 
     // if we have any coordinates that are categorical, convert them to
     // synthetic coords here
-    if (this.renderer.plot_view.frame.x_ranges != null) {   // XXXX JUST TEMP FOR TESTS TO PASS
-      const xr = this.renderer.plot_view.frame.x_ranges[this.model.x_range_name]
-      const yr = this.renderer.plot_view.frame.y_ranges[this.model.y_range_name]
+    //if (this.renderer.plot_view.frame.x_ranges != null) {   // XXXX JUST TEMP FOR TESTS TO PASS
+    if (true) {
+      const xr = this.renderer.scope.x_range
+      const yr = this.renderer.scope.y_range
 
       for (let [xname, yname] of this.model._coords) {
         xname = `_${xname}`
@@ -334,12 +335,12 @@ export abstract class GlyphView extends View {
         self[syname] = new Array(n)
 
         for (let i = 0; i < n; i++) {
-          const [sx, sy] = this.map_to_screen(self[xname][i], self[yname][i])
+          const [sx, sy] = this.renderer.scope.map_to_screen(self[xname][i], self[yname][i])
           self[sxname][i] = sx
           self[syname][i] = sy
         }
       } else
-        [self[sxname], self[syname]] = this.map_to_screen(self[xname], self[yname])
+        [self[sxname], self[syname]] = this.renderer.scope.map_to_screen(self[xname], self[yname])
     }
 
     this._map_data()
@@ -347,19 +348,12 @@ export abstract class GlyphView extends View {
 
   // This is where specs not included in coords are computed, e.g. radius.
   protected _map_data(): void {}
-
-  map_to_screen(x: Arrayable<number>, y: Arrayable<number>): [Arrayable<number>, Arrayable<number>] {
-    return this.renderer.plot_view.map_to_screen(x, y, this.model.x_range_name, this.model.y_range_name)
-  }
 }
 
 export namespace Glyph {
   export type Attrs = p.AttrsOf<Props>
 
-  export type Props = Model.Props & {
-    x_range_name: p.Property<string>
-    y_range_name: p.Property<string>
-  }
+  export type Props = Model.Props
 
   export type Visuals = visuals.Visuals
 }
@@ -378,11 +372,6 @@ export abstract class Glyph extends Model {
 
   static init_Glyph(): void {
     this.prototype._coords = []
-
-    this.internal({
-      x_range_name: [ p.String, 'default' ],
-      y_range_name: [ p.String, 'default' ],
-    })
   }
 
   static coords(coords: [string, string][]): void {
