@@ -2,7 +2,7 @@ import {Annotation, AnnotationView} from "./annotation"
 import {Toolbar} from "../tools/toolbar"
 import {ToolbarBaseView} from "../tools/toolbar_base"
 import {build_view} from "core/build_views"
-import {empty, position, display, undisplay} from "core/dom"
+import {div, empty, position, display, undisplay, remove} from "core/dom"
 import {Size} from "core/layout"
 import * as p from "core/properties"
 
@@ -12,10 +12,12 @@ export class ToolbarPanelView extends AnnotationView {
   readonly rotate: boolean = true
 
   protected _toolbar_view: ToolbarBaseView
+  protected toolbar_el: HTMLElement
 
   initialize(): void {
     super.initialize()
-    this.plot_view.canvas_view.add_event(this.el)
+    this.toolbar_el = div()
+    this.plot_view.canvas_view.add_event(this.toolbar_el)
   }
 
   async lazy_initialize(): Promise<void> {
@@ -25,24 +27,25 @@ export class ToolbarPanelView extends AnnotationView {
 
   remove(): void {
     this._toolbar_view.remove()
+    remove(this.toolbar_el)
     super.remove()
   }
 
   render(): void {
     super.render()
     if (!this.model.visible) {
-      undisplay(this.el)
+      undisplay(this.toolbar_el)
       return
     }
 
-    this.el.style.position = "absolute"
-    this.el.style.overflow = "hidden"
+    this.toolbar_el.style.position = "absolute"
+    this.toolbar_el.style.overflow = "hidden"
 
-    position(this.el, this.panel!.bbox)
+    position(this.toolbar_el, this.panel!.bbox)
     this._toolbar_view.render()
-    empty(this.el)
-    this.el.appendChild(this._toolbar_view.el)
-    display(this.el)
+    empty(this.toolbar_el)
+    this.toolbar_el.appendChild(this._toolbar_view.el)
+    display(this.toolbar_el)
   }
 
   protected _get_size(): Size {
