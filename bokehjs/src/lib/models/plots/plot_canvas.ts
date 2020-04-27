@@ -18,7 +18,6 @@ import {Reset} from "core/bokeh_events"
 import {Arrayable, Interval} from "core/types"
 import {Signal0} from "core/signaling"
 import {build_view, build_views, remove_views} from "core/build_views"
-import {UIEvents} from "core/ui_events"
 import {Visuals} from "core/visuals"
 import {logger} from "core/logging"
 import {Side, RenderLevel} from "core/enums"
@@ -139,7 +138,6 @@ export class PlotView extends LayoutDOMView {
   }
 
   protected throttled_paint: () => void
-  protected ui_event_bus: UIEvents
 
   computed_renderers: Renderer[]
 
@@ -205,7 +203,6 @@ export class PlotView extends LayoutDOMView {
   }
 
   remove(): void {
-    this.ui_event_bus.destroy()
     remove_views(this.renderer_views)
     remove_views(this.tool_views)
     this.canvas_view.remove()
@@ -267,7 +264,7 @@ export class PlotView extends LayoutDOMView {
 
   async lazy_initialize(): Promise<void> {
     this.canvas_view = await build_view(this.canvas, {parent: this})
-    this.ui_event_bus = new UIEvents(this, this.model.toolbar, this.canvas_view.events_el)
+    this.canvas_view.plot_views = [this]
 
     await this.build_renderer_views()
     await this.build_tool_views()
@@ -791,7 +788,7 @@ export class PlotView extends LayoutDOMView {
   async build_tool_views(): Promise<void> {
     const tool_models = this.model.toolbar.tools
     const new_tool_views = await build_views(this.tool_views, tool_models, {parent: this}) as ToolView[]
-    new_tool_views.map((tool_view) => this.ui_event_bus.register_tool(tool_view))
+    new_tool_views.map((tool_view) => this.canvas_view.ui_event_bus.register_tool(tool_view))
   }
 
   connect_signals(): void {
