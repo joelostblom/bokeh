@@ -58,7 +58,13 @@ export abstract class RendererView extends View {
     return false
   }
 
+  dirty: boolean = true
+
   abstract render(): void
+
+  paint(): void {
+    this.render()
+  }
 
   get needs_clip(): boolean {
     switch (this.model.level) {
