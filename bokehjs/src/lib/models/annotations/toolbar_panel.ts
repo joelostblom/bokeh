@@ -32,7 +32,6 @@ export class ToolbarPanelView extends AnnotationView {
   }
 
   render(): void {
-    super.render()
     if (!this.model.visible) {
       undisplay(this.toolbar_el)
       return

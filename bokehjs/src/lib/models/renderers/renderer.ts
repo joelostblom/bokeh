@@ -1,13 +1,13 @@
 import {View} from "core/view"
 import * as visuals from "core/visuals"
 import {RenderLevel} from "core/enums"
-import {Arrayable} from "core/types"
+import {Arrayable, Box} from "core/types"
 import * as p from "core/properties"
 import {Model} from "../../model"
 import {BBox} from "core/util/bbox"
 
-import {Plot, PlotView} from "../plots/plot"
-import {CanvasLayer} from "../canvas/canvas"
+import type {Plot, PlotView} from "../plots/plot"
+import type {CanvasView, CanvasLayer} from "../canvas/canvas"
 
 export abstract class RendererView extends View {
   model: Renderer
@@ -21,6 +21,10 @@ export abstract class RendererView extends View {
     this._has_finished = true // XXX: should be in render() but subclasses don't respect super()
   }
 
+  get canvas_view(): CanvasView {
+    return this.parent.canvas_view
+  }
+
   get plot_view(): PlotView {
     return this.parent
   }
@@ -30,8 +34,8 @@ export abstract class RendererView extends View {
   }
 
   get layer(): CanvasLayer {
-    const {canvas_view} = this.plot_view
-    return this.model.level == "overlay" ? canvas_view.overlays : canvas_view.primary
+    const {overlays, primary} = this.canvas_view
+    return this.model.level == "overlay" ? overlays : primary
   }
 
   request_render(): void {
@@ -50,15 +54,26 @@ export abstract class RendererView extends View {
 
   interactive_hit?(sx: number, sy: number): boolean
 
-  get needs_clip(): boolean {
-    return false
-  }
-
   get has_webgl(): boolean {
     return false
   }
 
-  render(): void {}
+  abstract render(): void
+
+  get needs_clip(): boolean {
+    switch (this.model.level) {
+      case "image":
+      case "underlay":
+      case "glyph":
+        return true
+      default:
+        return false
+    }
+  }
+
+  get clip_box(): Box | null {
+    return this.needs_clip ? this.plot_view.frame.bbox.box : null
+  }
 }
 
 export namespace Renderer {
