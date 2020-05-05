@@ -763,10 +763,10 @@ export class PlotCanvasView extends LayoutDOMView {
     this._needs_layout = false
 
     this.model.setv({
-      inner_width: Math.round(this.frame._width.value),
-      inner_height: Math.round(this.frame._height.value),
-      outer_width: Math.round(this.layout._width.value),
-      outer_height: Math.round(this.layout._height.value),
+      inner_width: Math.round(this.frame.bbox.width),
+      inner_height: Math.round(this.frame.bbox.height),
+      outer_width: Math.round(this.layout.bbox.width),
+      outer_height: Math.round(this.layout.bbox.height),
     }, {no_change: true})
 
     if (this.model.match_aspect !== false) {
@@ -795,10 +795,10 @@ export class PlotCanvasView extends LayoutDOMView {
       this.set_initial_range()
 
     const frame_box: FrameBox = [
-      this.frame._left.value,
-      this.frame._top.value,
-      this.frame._width.value,
-      this.frame._height.value,
+      this.frame.bbox.left,
+      this.frame.bbox.top,
+      this.frame.bbox.width,
+      this.frame.bbox.height,
     ]
 
     const {primary} = this.canvas_view
@@ -833,10 +833,10 @@ export class PlotCanvasView extends LayoutDOMView {
       let [x0, y0, w, h] = frame_box
       // XXX: shrink outline region by 1px to make right and bottom lines visible
       // if they are on the edge of the canvas.
-      if (x0 + w == this.layout._width.value) {
+      if (x0 + w == this.layout.bbox.width) {
         w -= 1
       }
-      if (y0 + h == this.layout._height.value) {
+      if (y0 + h == this.layout.bbox.height) {
         h -= 1
       }
       ctx.strokeRect(x0, y0, w, h)

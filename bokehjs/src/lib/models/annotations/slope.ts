@@ -35,8 +35,8 @@ export class SlopeView extends AnnotationView {
     const xscale = this.scope.x_scale
     const yscale = this.scope.y_scale
 
-    const sy_start = frame._top.value
-    const sy_end = sy_start + frame._height.value
+    const sy_start = frame.bbox.top
+    const sy_end = sy_start + frame.bbox.height
 
     const y_start = yscale.invert(sy_start)
     const y_end = yscale.invert(sy_end)
