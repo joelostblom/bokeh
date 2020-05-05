@@ -1,14 +1,17 @@
 import {View} from "core/view"
 import * as visuals from "core/visuals"
 import {RenderLevel} from "core/enums"
-import {Box} from "core/types"
+import {Box, Arrayable} from "core/types"
 import * as p from "core/properties"
 import {Model} from "../../model"
 import {BBox} from "core/util/bbox"
+import {Scale} from "../scales/scale"
+import {Range} from "../ranges/range"
+//import {build_view} from "core/build_views"
 
 import type {Plot, PlotView} from "../plots/plot"
 import type {CanvasView, CanvasLayer} from "../canvas/canvas"
-import {Scope, ScopeView} from "../canvas/scope"
+import {Scope, CoordinateSystem} from "../canvas/scope"
 
 export abstract class RendererView extends View {
   model: Renderer
@@ -16,10 +19,33 @@ export abstract class RendererView extends View {
 
   parent: PlotView
 
+  private _scope: CoordinateSystem
+
   initialize(): void {
     super.initialize()
     this.visuals = new visuals.Visuals(this.model)
     this._has_finished = true // XXX: should be in render() but subclasses don't respect super()
+
+    const {x_range_name, y_range_name} = this.model as any
+    const {frame} = this.plot_view
+    this._scope = {
+      get x_range(): Range { return frame.x_ranges[x_range_name] },
+      get y_range(): Range { return frame.y_ranges[y_range_name] },
+      get x_scale(): Scale { return frame.xscales[x_range_name] },
+      get y_scale(): Scale { return frame.yscales[y_range_name] },
+      get ranges(): [Range, Range] { return [this.x_range, this.y_range] },
+      get scales(): [Scale, Scale] { return [this.x_scale, this.y_scale] },
+      map_to_screen(xs: Arrayable<number>, ys: Arrayable<number>): [Arrayable<number>, Arrayable<number>] {
+        const sxs = this.x_scale.v_compute(xs)
+        const sys = this.y_scale.v_compute(ys)
+        return [sxs, sys]
+      },
+      map_from_screen(sxs: Arrayable<number>, sys: Arrayable<number>): [Arrayable<number>, Arrayable<number>] {
+        const xs = this.x_scale.v_invert(sxs)
+        const ys = this.y_scale.v_invert(sys)
+        return [xs, ys]
+      },
+    }
   }
 
   get canvas_view(): CanvasView {
@@ -39,11 +65,8 @@ export abstract class RendererView extends View {
     return this.model.level == "overlay" ? overlays : primary
   }
 
-  get scope(): ScopeView {
-    //this.canvas_view.scope_views
-    //this.model.scope
-    //(this.model as any).x_range_name
-    //(this.model as any).y_range_name
+  get scope(): CoordinateSystem {
+    return this._scope
   }
 
   request_render(): void {

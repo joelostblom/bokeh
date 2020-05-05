@@ -27,17 +27,17 @@ export class CartesianFrame {
     return this.bbox.yview
   }
 
-  constructor(readonly x_scale: Scale,
-              readonly y_scale: Scale,
+  constructor(private readonly in_x_scale: Scale,
+              private readonly in_y_scale: Scale,
               readonly x_range: Range,
               readonly y_range: Range,
-              readonly extra_x_ranges: Ranges = {},
-              readonly extra_y_ranges: Ranges = {}) {
+              private readonly extra_x_ranges: Ranges = {},
+              private readonly extra_y_ranges: Ranges = {}) {
     this._configure_scales()
   }
 
-  protected _h_target: Range1d
-  protected _v_target: Range1d
+  protected _x_target: Range1d
+  protected _y_target: Range1d
 
   protected _x_ranges: Ranges
   protected _y_ranges: Ranges
@@ -79,8 +79,8 @@ export class CartesianFrame {
   protected _configure_frame_ranges(): void {
     // data to/from screen space transform (left-bottom <-> left-top origin)
     const {bbox} = this
-    this._h_target = new Range1d({start: bbox.left, end: bbox.right})
-    this._v_target = new Range1d({start: bbox.bottom, end: bbox.top})
+    this._x_target = new Range1d({start: bbox.left, end: bbox.right})
+    this._y_target = new Range1d({start: bbox.bottom, end: bbox.top})
   }
 
   protected _configure_scales(): void {
@@ -89,8 +89,8 @@ export class CartesianFrame {
     this._x_ranges = this._get_ranges(this.x_range, this.extra_x_ranges)
     this._y_ranges = this._get_ranges(this.y_range, this.extra_y_ranges)
 
-    this._xscales = this._get_scales(this.x_scale, this._x_ranges, this._h_target)
-    this._yscales = this._get_scales(this.y_scale, this._y_ranges, this._v_target)
+    this._xscales = this._get_scales(this.in_x_scale, this._x_ranges, this._x_target)
+    this._yscales = this._get_scales(this.in_y_scale, this._y_ranges, this._y_target)
   }
 
   protected _update_scales(): void {
@@ -98,12 +98,12 @@ export class CartesianFrame {
 
     for (const name in this._xscales) {
       const scale = this._xscales[name]
-      scale.target_range = this._h_target
+      scale.target_range = this._x_target
     }
 
     for (const name in this._yscales) {
       const scale = this._yscales[name]
-      scale.target_range = this._v_target
+      scale.target_range = this._y_target
     }
   }
 
@@ -126,5 +126,13 @@ export class CartesianFrame {
 
   get yscales(): Scales {
     return this._yscales
+  }
+
+  get x_scale(): Scale {
+    return this._xscales.default
+  }
+
+  get y_scale(): Scale {
+    return this._yscales.default
   }
 }

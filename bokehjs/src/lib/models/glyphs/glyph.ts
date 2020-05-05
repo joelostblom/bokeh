@@ -261,8 +261,6 @@ export abstract class GlyphView extends View {
 
     // if we have any coordinates that are categorical, convert them to
     // synthetic coords here
-    //if (this.renderer.plot_view.frame.x_ranges != null) {   // XXXX JUST TEMP FOR TESTS TO PASS
-    if (true) {
       const xr = this.renderer.scope.x_range
       const yr = this.renderer.scope.y_range
 
@@ -289,7 +287,6 @@ export abstract class GlyphView extends View {
           }
         }
       }
-    }
 
     if (this.glglyph != null)
       this.glglyph.set_data_changed(self._x.length)

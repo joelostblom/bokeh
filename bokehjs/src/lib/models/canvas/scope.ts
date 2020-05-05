@@ -2,14 +2,30 @@ import {Model} from "../../model"
 import {Range} from "../ranges/range"
 import {Range1d} from "../ranges/range1d"
 import {Scale} from "../scales/scale"
-import {PlotView} from "../plots/plot"
 import {View} from "core/view"
 import {Arrayable} from "core/types"
 import * as p from "core/properties"
 
-export class ScopeView extends View {
+import type {PlotCanvasView} from "../plots/plot_canvas"
+import type {RendererView} from "../renderers/renderer"
+import type {CanvasView} from "../canvas/canvas"
+
+export type CoordinateSystem = {
+  x_range: Range
+  y_range: Range
+  x_scale: Scale
+  y_scale: Scale
+  ranges: [Range, Range]
+  scales: [Scale, Scale]
+  map_to_screen(xs: Arrayable<number>, ys: Arrayable<number>): [Arrayable<number>, Arrayable<number>]
+  map_from_screen(xs: Arrayable<number>, ys: Arrayable<number>): [Arrayable<number>, Arrayable<number>]
+}
+
+export type RendererLikeView = PlotCanvasView | CanvasView | RendererView
+
+export class ScopeView extends View implements CoordinateSystem {
   model: Scope
-  parent: PlotView
+  parent: RendererLikeView
 
   get x_range(): Range { return this.model.x_range }
   get y_range(): Range { return this.model.y_range }
@@ -45,21 +61,23 @@ export class ScopeView extends View {
     this._configure_scales()
   }
 
-  /*protected*/ _configure_scales(): void {
+  protected _configure_scales(): void {
+    /*
     const {outer} = this.model
-    const {scope_views, frame} = this.parent
+    const {scope_views, scope} = this.parent
 
-    const outer_view = outer != null ? scope_views[outer.id] : frame
+    const outer_view = outer != null ? scope_views[outer.id] : scope
 
     const {x_range, x_scale, x_target} = this.model
     const {y_range, y_scale, y_target} = this.model
 
     this._x_scale = this._configure_scale(x_scale, x_range, x_target, outer_view.x_scale)
     this._y_scale = this._configure_scale(y_scale, y_range, y_target, outer_view.y_scale)
+    */
   }
 
   protected _configure_scale(scale: Scale, source_range: Range, target_range: Range1d | null, outer_scale: Scale): Scale {
-    const target = target_range || outer_scale.source_range
+    const target = target_range ?? outer_scale.source_range
 
     const start = outer_scale.compute(target.start)
     const end = outer_scale.compute(target.end)
@@ -90,6 +108,7 @@ export interface Scope extends Scope.Attrs {}
 
 export class Scope extends Model {
   properties: Scope.Props
+  default_view: typeof ScopeView
 
   constructor(attrs?: Partial<Scope.Attrs>) {
     super(attrs)

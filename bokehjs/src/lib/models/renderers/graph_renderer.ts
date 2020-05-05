@@ -58,11 +58,6 @@ export class GraphRendererView extends DataRendererView {
   }
 
   set_data(request_render: boolean = true): void {
-    // TODO (bev) this is a bit clunky, need to make sure glyphs use the correct ranges when they call
-    // mapping functions on the base Renderer class
-    this.node_view.glyph.model.setv({x_range_name: this.model.x_range_name, y_range_name: this.model.y_range_name}, {silent: true})
-    this.edge_view.glyph.model.setv({x_range_name: this.model.x_range_name, y_range_name: this.model.y_range_name}, {silent: true})
-
     // XXX
     const node_glyph: any = this.node_view.glyph
     ;[node_glyph._x, node_glyph._y] =

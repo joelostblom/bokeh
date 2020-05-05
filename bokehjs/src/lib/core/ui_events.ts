@@ -494,12 +494,9 @@ export class UIEventBus implements EventListenerObject {
 
   protected _trigger_bokeh_event(plot_view: PlotCanvasView, e: UIEvent): void {
     const ev = (() => {
-      const xscale = plot_view.frame.xscales.default
-      const yscale = plot_view.frame.yscales.default
-
       const {sx, sy} = e
-      const x = xscale.invert(sx)
-      const y = yscale.invert(sy)
+      const x = plot_view.frame.x_scale.invert(sx)
+      const y = plot_view.frame.y_scale.invert(sy)
 
       switch (e.type) {
         case "wheel":
