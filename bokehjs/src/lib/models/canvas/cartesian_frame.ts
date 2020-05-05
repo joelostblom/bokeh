@@ -7,13 +7,25 @@ import {Range1d} from "../ranges/range1d"
 import {DataRange1d} from "../ranges/data_range1d"
 import {FactorRange} from "../ranges/factor_range"
 
-import {LayoutItem} from "core/layout"
-import {BBox} from "core/util/bbox"
+import {BBox, CoordinateTransform} from "core/util/bbox"
 
 export type Ranges = {[key: string]: Range}
 export type Scales = {[key: string]: Scale}
 
-export class CartesianFrame extends LayoutItem {
+export class CartesianFrame {
+
+  protected _bbox: BBox = new BBox()
+  get bbox(): BBox {
+    return this._bbox
+  }
+
+  get xview(): CoordinateTransform {
+    return this.bbox.xview
+  }
+
+  get yview(): CoordinateTransform {
+    return this.bbox.yview
+  }
 
   constructor(readonly x_scale: Scale,
               readonly y_scale: Scale,
@@ -21,7 +33,6 @@ export class CartesianFrame extends LayoutItem {
               readonly y_range: Range,
               readonly extra_x_ranges: Ranges = {},
               readonly extra_y_ranges: Ranges = {}) {
-    super()
     this._configure_scales()
   }
 
@@ -96,8 +107,8 @@ export class CartesianFrame extends LayoutItem {
     }
   }
 
-  protected _set_geometry(outer: BBox, inner: BBox): void {
-    super._set_geometry(outer, inner)
+  recompute(bbox: BBox): void {
+    this._bbox = bbox
     this._update_scales()
   }
 
